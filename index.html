@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(45deg, #1a1a1a, #2c3e50);
+      font-family: 'Arial', sans-serif;
+    }
+
+    .calculator {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    #display {
+      width: 100%;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      color: #fff;
+      font-size: 2rem;
+      text-align: right;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+
+    button {
+      padding: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.5s;
+    }
+
+    button:active::after {
+      transform: translate(-50%, -50%) scale(2);
+      opacity: 0;
+    }
+
+    .operator {
+      background: rgba(52, 152, 219, 0.3);
+    }
+
+    .equals {
+      background: rgba(46, 204, 113, 0.3);
+      grid-column: span 2;
+    }
+
+    .clear {
+      background: rgba(231, 76, 60, 0.3);
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px) rotate3d(1, 1, 1, 0deg); }
+      50% { transform: translateY(-10px) rotate3d(1, 1, 1, 2deg); }
+      100% { transform: translateY(0px) rotate3d(1, 1, 1, 0deg); }
+    }
+
+    .calculator {
+      animation: float 6s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="display" readonly>
+    <div class="buttons">
+      <button class="clear" onclick="clearDisplay()">C</button>
+      <button onclick="appendToDisplay('(')">(</button>
+      <button onclick="appendToDisplay(')')">)</button>
+      <button class="operator" onclick="appendToDisplay('/')">/</button>
+      <button onclick="appendToDisplay('7')">7</button>
+      <button onclick="appendToDisplay('8')">8</button>
+      <button onclick="appendToDisplay('9')">9</button>
+      <button class="operator" onclick="appendToDisplay('*')">×</button>
+      <button onclick="appendToDisplay('4')">4</button>
+      <button onclick="appendToDisplay('5')">5</button>
+      <button onclick="appendToDisplay('6')">6</button>
+      <button class="operator" onclick="appendToDisplay('-')">-</button>
+      <button onclick="appendToDisplay('1')">1</button>
+      <button onclick="appendToDisplay('2')">2</button>
+      <button onclick="appendToDisplay('3')">3</button>
+      <button class="operator" onclick="appendToDisplay('+')">+</button>
+      <button onclick="appendToDisplay('0')">0</button>
+      <button onclick="appendToDisplay('.')">.</button>
+      <button class="equals" onclick="calculate()">=</button>
+    </div>
+  </div>
+
+  <script>
+    let display = document.getElementById('display');
+    let calculation = '';
+
+    function appendToDisplay(value) {
+      calculation += value;
+      display.value = calculation;
+      animateButton(event.target);
+    }
+
+    function clearDisplay() {
+      calculation = '';
+      display.value = '';
+      animateButton(event.target);
+    }
+
+    function calculate() {
+      try {
+        calculation = eval(calculation).toString();
+        display.value = calculation;
+      } catch (error) {
+        display.value = 'Error';
+        calculation = '';
+      }
+      animateButton(event.target);
+    }
+
+    function animateButton(button) {
+      button.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        button.style.transform = 'scale(1)';
+      }, 100);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key;
+      const validKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/', '.', '(', ')', 'Enter', 'Escape'];
+      
+      if (validKeys.includes(key)) {
+        event.preventDefault();
+        if (key === 'Enter') {
+          calculate();
+        } else if (key === 'Escape') {
+          clearDisplay();
+        } else {
+          appendToDisplay(key);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
